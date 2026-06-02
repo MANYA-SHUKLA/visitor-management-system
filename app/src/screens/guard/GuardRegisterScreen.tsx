@@ -15,6 +15,7 @@ import {
   SecondaryButton,
 } from '../../components/ui';
 import api from '../../lib/api';
+import { isValidPhone, PHONE_LENGTH, sanitizePhone } from '../../lib/phone';
 import type { GuardStackParamList } from '../../navigation/types';
 import type { User } from '../../types';
 import { colors } from '../../theme/colors';
@@ -41,6 +42,10 @@ export default function GuardRegisterScreen() {
 
   async function handleSubmit() {
     setError('');
+    if (!isValidPhone(visitorPhone)) {
+      setError(`Phone must be exactly ${PHONE_LENGTH} digits`);
+      return;
+    }
     setLoading(true);
     try {
       const res = await api.post('/visits', {
@@ -68,7 +73,13 @@ export default function GuardRegisterScreen() {
         <Label>Visitor name</Label>
         <Input value={visitorName} onChangeText={setVisitorName} />
         <Label>Phone</Label>
-        <Input value={visitorPhone} onChangeText={setVisitorPhone} keyboardType="phone-pad" />
+        <Input
+          value={visitorPhone}
+          onChangeText={(text) => setVisitorPhone(sanitizePhone(text))}
+          keyboardType="number-pad"
+          maxLength={PHONE_LENGTH}
+          placeholder="10-digit mobile number"
+        />
         <Label>Purpose</Label>
         <Input
           value={purpose}
@@ -116,7 +127,12 @@ export default function GuardRegisterScreen() {
           title={loading ? 'Submitting…' : 'Submit for approval'}
           onPress={handleSubmit}
           loading={loading}
-          disabled={!visitorName || !visitorPhone || !purpose || !apartment}
+          disabled={
+            !visitorName ||
+            !isValidPhone(visitorPhone) ||
+            !purpose ||
+            !apartment
+          }
         />
       </Card>
     </View>

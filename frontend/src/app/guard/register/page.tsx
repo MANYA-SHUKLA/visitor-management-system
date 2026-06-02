@@ -4,6 +4,7 @@ import { FormEvent, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
+import { isValidPhone, PHONE_LENGTH, sanitizePhone } from '@/lib/phone';
 import type { User } from '@/types';
 
 export default function RegisterVisitorPage() {
@@ -27,6 +28,10 @@ export default function RegisterVisitorPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
+    if (!isValidPhone(visitorPhone)) {
+      setError(`Phone must be exactly ${PHONE_LENGTH} digits`);
+      return;
+    }
     setLoading(true);
     try {
       const res = await api.post('/visits', {
@@ -68,9 +73,14 @@ export default function RegisterVisitorPage() {
           <label className="block text-sm font-medium">Phone</label>
           <input
             required
+            inputMode="numeric"
+            pattern="\d{10}"
+            maxLength={PHONE_LENGTH}
             value={visitorPhone}
-            onChange={(e) => setVisitorPhone(e.target.value)}
+            onChange={(e) => setVisitorPhone(sanitizePhone(e.target.value))}
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            placeholder="10-digit mobile number"
+            title={`Enter a ${PHONE_LENGTH}-digit phone number`}
           />
         </div>
         <div>
@@ -117,7 +127,7 @@ export default function RegisterVisitorPage() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !isValidPhone(visitorPhone)}
           className="w-full rounded-lg bg-slate-900 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60 md:col-span-2"
         >
           {loading ? 'Submitting…' : 'Submit for approval'}
