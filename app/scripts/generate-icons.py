@@ -45,7 +45,6 @@ def draw_ms_tile(size: int, radius_ratio: float = 0.1875) -> Image.Image:
 
 
 def draw_ms_foreground(size: int) -> Image.Image:
-    """Transparent PNG with MS for Android adaptive foreground."""
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     font_size = int(size * 0.32)
