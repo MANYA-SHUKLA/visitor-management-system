@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'https://visitor-management-system-6n23.onrender.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL is not set. Copy frontend/.env.example to frontend/.env.local');
+}
 
 const api = axios.create({
   baseURL: API_URL,

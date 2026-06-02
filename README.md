@@ -186,9 +186,12 @@ If SMTP is not set, emails are skipped (logged as `[email skipped]`); in-app not
 
 ```bash
 cd frontend
+cp .env.example .env.local
 npm install
 npm run dev
 ```
+
+Set `NEXT_PUBLIC_API_URL` in `.env.local` (include `/api`, no trailing slash after the host).
 
 Open **http://localhost:3000**. `npm run dev` uses **Turbopack** to hot-reload the UI when you edit `src/`.
 
