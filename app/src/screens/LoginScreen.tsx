@@ -10,6 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Footer from '../components/Footer';
+import LogoMark from '../components/LogoMark';
 import { Card, ErrorBanner, Input, Label, PrimaryButton, ScreenTitle } from '../components/ui';
 import api from '../lib/api';
 import { roleHome, setSession } from '../lib/auth';
@@ -53,6 +54,7 @@ export default function LoginScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <Card style={styles.card}>
+          <LogoMark size={64} style={styles.logo} />
           <ScreenTitle title="Sign in" subtitle="Visitor Management System" />
           <Label>Email</Label>
           <Input
@@ -98,6 +100,7 @@ const styles = StyleSheet.create({
     paddingTop: 48,
   },
   card: { maxWidth: 520, width: '100%', alignSelf: 'center' },
+  logo: { alignSelf: 'center', marginBottom: 16 },
   demo: {
     marginTop: 24,
     backgroundColor: colors.slate50,
