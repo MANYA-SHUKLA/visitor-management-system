@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+
 """Generate MS-branded Expo assets (matches frontend/src/app/icon.tsx)."""
 
 from pathlib import Path
