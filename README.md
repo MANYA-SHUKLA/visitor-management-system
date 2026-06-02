@@ -101,8 +101,8 @@ Role permissions match the spec (guard / resident / admin).
 
 With the backend running:
 
-- **Swagger UI:** http://localhost:5000/api-docs
-- **OpenAPI YAML:** http://localhost:5000/openapi.yaml
+- **Swagger UI:** https://visitor-management-system-6n23.onrender.com/api-docs
+- **OpenAPI YAML:** https://visitor-management-system-6n23.onrender.com/openapi.yaml
 - **Spec file:** `backend/openapi.yaml`
 
 In Swagger UI, click **Authorize** and enter `Bearer <your-jwt>` from login.

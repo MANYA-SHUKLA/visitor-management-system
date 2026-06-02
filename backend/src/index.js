@@ -45,7 +45,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+  const baseUrl = process.env.BASE_URL || 'https://visitor-management-system-6n23.onrender.com';
   res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,7 +92,7 @@ app.use(errorHandler);
 async function start() {
   await connectDB();
   app.listen(PORT, () => {
-    const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+    const baseUrl = process.env.BASE_URL || 'https://visitor-management-system-6n23.onrender.com';
     console.log(`API running on ${baseUrl}`);
     console.log(`Swagger UI: ${baseUrl}/api-docs`);
   });
