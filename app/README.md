@@ -22,18 +22,9 @@ React Native (Expo) app for **iOS and Android**, mirroring the web `frontend/` f
 
 ## Backend URL
 
-Copy `.env.example` to `.env` and set your API URL:
+API calls use the production backend (hardcoded in `src/config.ts`):
 
-```bash
-EXPO_PUBLIC_API_URL=https://your-backend.onrender.com/api
-```
-
-- Use **`/api`** at the end (same as `NEXT_PUBLIC_API_URL` on web).
-- **Android emulator:** `http://10.0.2.2:5000/api`
-- **iOS simulator:** `http://localhost:5000/api`
-- **Physical device:** your machine’s LAN IP, e.g. `http://192.168.1.10:5000/api`
-
-Restart Expo after changing `.env`.
+`https://visitor-management-system-6n23.onrender.com/api`
 
 ## Logo
 

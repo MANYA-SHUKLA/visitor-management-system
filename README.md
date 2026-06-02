@@ -198,7 +198,6 @@ Run backend and frontend in **two terminals** for full-stack development.
 
 ```bash
 cd app
-cp .env.example .env   # set EXPO_PUBLIC_API_URL to your backend /api URL
 npm install
 npm start
 ```
