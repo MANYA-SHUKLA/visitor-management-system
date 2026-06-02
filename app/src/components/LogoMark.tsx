@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { colors } from '../theme/colors';
 
-/** In-app MS mark — matches web `frontend/src/app/icon.tsx`. */
 export default function LogoMark({
   size = 56,
   style,

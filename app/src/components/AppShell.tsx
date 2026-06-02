@@ -103,7 +103,6 @@ export function AppShellFrame({
   );
 }
 
-/** Wrap screen content with padding (screens manage their own ScrollView). */
 export default function AppShellContent({
   children,
   style,

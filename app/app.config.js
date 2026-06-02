@@ -1,4 +1,3 @@
-/** @type {import('expo/config').ExpoConfig} */
 export default {
   expo: {
     name: 'Visitor Management',
