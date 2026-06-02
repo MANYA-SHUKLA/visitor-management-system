@@ -39,7 +39,7 @@ export default {
       ],
     ],
     extra: {
-      apiUrl: process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api',
+      apiUrl: 'https://visitor-management-system-6n23.onrender.com/api',
     },
   },
 };

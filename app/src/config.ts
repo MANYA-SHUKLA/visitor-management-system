@@ -1,6 +1,1 @@
-import Constants from 'expo-constants';
-
-export const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  (Constants.expoConfig?.extra?.apiUrl as string | undefined) ||
-  'http://localhost:5000/api';
+export const API_URL = 'https://visitor-management-system-6n23.onrender.com/api';
