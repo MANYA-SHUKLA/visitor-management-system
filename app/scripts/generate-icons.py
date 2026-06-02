@@ -26,7 +26,6 @@ def load_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
 
 
 def draw_ms_tile(size: int, radius_ratio: float = 0.1875) -> Image.Image:
-    """Rounded slate tile with MS (icon style)."""
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
     margin = int(size * 0.08)
