@@ -32,7 +32,7 @@ const navByRole: Record<UserRole, NavItem[]> = {
   ],
 };
 
-export default function AppShell({
+export function AppShellFrame({
   role,
   title,
   userName,
@@ -93,16 +93,15 @@ export default function AppShell({
           })}
         </ScrollView>
       </View>
-      <ScrollView
-        style={styles.main}
-        contentContainerStyle={styles.mainContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        {children}
-      </ScrollView>
+      <View style={styles.content}>{children}</View>
       <Footer />
     </View>
   );
+}
+
+/** Wrap screen content with padding (screens manage their own ScrollView). */
+export default function AppShellContent({ children }: { children: ReactNode }) {
+  return <View style={styles.screenPadding}>{children}</View>;
 }
 
 const styles = StyleSheet.create({
@@ -156,6 +155,6 @@ const styles = StyleSheet.create({
   navItemActive: { backgroundColor: colors.slate900 },
   navText: { fontSize: 14, fontWeight: '500', color: colors.slate600 },
   navTextActive: { color: colors.white },
-  main: { flex: 1 },
-  mainContent: { padding: 16, paddingBottom: 24 },
+  content: { flex: 1 },
+  screenPadding: { flex: 1, padding: 16 },
 });
