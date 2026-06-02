@@ -35,6 +35,14 @@ EXPO_PUBLIC_API_URL=https://your-backend.onrender.com/api
 
 Restart Expo after changing `.env`.
 
+## Logo
+
+Home-screen and splash icons use **MS** on slate (`#0f172a`), matching the web app. Regenerate assets:
+
+```bash
+npm run generate-icons
+```
+
 ## Run
 
 ```bash
