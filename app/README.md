@@ -22,7 +22,7 @@ React Native (Expo) app for **iOS and Android**, mirroring the web `frontend/` f
 
 ## Backend URL
 
-API calls use the production backend (hardcoded in `src/config.ts`):
+API calls use the production backend (hardcoded in `src/lib/api.ts`):
 
 `https://visitor-management-system-6n23.onrender.com/api`
 

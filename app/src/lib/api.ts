@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { API_URL } from '../config';
 import { getToken } from './auth';
+
+const API_URL = 'https://visitor-management-system-6n23.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_URL,

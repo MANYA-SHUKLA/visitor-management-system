@@ -38,8 +38,5 @@ export default {
         },
       ],
     ],
-    extra: {
-      apiUrl: 'https://visitor-management-system-6n23.onrender.com/api',
-    },
   },
 };
