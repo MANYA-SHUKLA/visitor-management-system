@@ -27,7 +27,6 @@ function ScreenScroll({ children }: { children: React.ReactNode }) {
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function wrapScreen(Component: React.ComponentType<any>, scroll = true) {
   return function Wrapped(props: any) {
     if (!scroll) {
