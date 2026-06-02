@@ -3,7 +3,7 @@ import axios from 'axios';
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 if (!API_URL) {
-  throw new Error('NEXT_PUBLIC_API_URL is not set. Copy frontend/.env.example to frontend/.env.local');
+  throw new Error('NEXT_PUBLIC_API_URL is not set.');
 }
 
 const api = axios.create({
