@@ -11,7 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Footer from '../components/Footer';
 import LogoMark from '../components/LogoMark';
-import { Card, ErrorBanner, Input, Label, PrimaryButton, ScreenTitle } from '../components/ui';
+import { Card, ErrorBanner, Input, Label, PasswordInput, PrimaryButton, ScreenTitle } from '../components/ui';
 import api from '../lib/api';
 import { roleHome, setSession } from '../lib/auth';
 import type { RootStackParamList } from '../navigation/types';
@@ -66,10 +66,9 @@ export default function LoginScreen() {
             placeholder="guard@shuklamanya99.com"
           />
           <Label>Password</Label>
-          <Input
+          <PasswordInput
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
           />
           {error ? <ErrorBanner message={error} /> : null}
           <PrimaryButton

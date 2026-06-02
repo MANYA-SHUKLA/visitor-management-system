@@ -1,4 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -55,6 +57,33 @@ export function Label({ children }: { children: string }) {
 
 export function Input(props: TextInputProps) {
   return <TextInput {...props} style={[styles.input, props.style]} placeholderTextColor={colors.slate400} />;
+}
+
+export function PasswordInput(props: TextInputProps) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <View style={styles.passwordWrap}>
+      <TextInput
+        {...props}
+        secureTextEntry={!visible}
+        style={[styles.input, styles.passwordInput, props.style]}
+        placeholderTextColor={colors.slate400}
+      />
+      <TouchableOpacity
+        style={styles.passwordToggle}
+        onPress={() => setVisible((current) => !current)}
+        accessibilityRole="button"
+        accessibilityLabel={visible ? 'Hide password' : 'Show password'}
+      >
+        <Ionicons
+          name={visible ? 'eye-off-outline' : 'eye-outline'}
+          size={22}
+          color={colors.slate500}
+        />
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 export function PrimaryButton({
@@ -133,6 +162,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.slate900,
     marginBottom: 12,
+  },
+  passwordWrap: {
+    position: 'relative',
+    marginBottom: 12,
+  },
+  passwordInput: {
+    marginBottom: 0,
+    paddingRight: 44,
+  },
+  passwordToggle: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   primaryBtn: {
     backgroundColor: colors.slate900,
