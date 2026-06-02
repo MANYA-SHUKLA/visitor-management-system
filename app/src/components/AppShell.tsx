@@ -9,6 +9,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import NotificationBell from './NotificationBell';
 import Footer from './Footer';
+import LogoMark from './LogoMark';
 import type { UserRole } from '../types';
 import { colors } from '../theme/colors';
 
