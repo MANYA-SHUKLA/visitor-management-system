@@ -10,6 +10,7 @@ const {
   getVisitQr,
   markEntry,
   markExit,
+  getVisitCounts,
 } = require('../controllers/visitController');
 const { authenticate, authorize, loadUser } = require('../middleware/auth');
 
@@ -18,6 +19,7 @@ const router = express.Router();
 router.use(authenticate, loadUser);
 
 router.get('/', listVisits);
+router.get('/counts', getVisitCounts);
 
 router.post(
   '/scan',

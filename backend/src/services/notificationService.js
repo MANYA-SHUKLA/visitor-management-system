@@ -31,11 +31,12 @@ async function notifyVisitApproved(guardId, visit) {
 }
 
 async function notifyVisitRejected(guardId, visit) {
+  const reason = visit.rejectReason ? ` — "${visit.rejectReason}"` : '';
   return createNotification({
     userId: guardId,
     type: 'visit_rejected',
     title: 'Visit rejected',
-    body: `${visit.visitorName} at ${visit.apartment} was rejected`,
+    body: `${visit.visitorName} at ${visit.apartment} was rejected${reason}`,
     visitId: visit._id,
   });
 }

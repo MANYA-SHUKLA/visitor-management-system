@@ -327,6 +327,32 @@ async function markExit(req, res, next) {
   }
 }
 
+async function getVisitCounts(req, res, next) {
+  try {
+    const filter = {};
+    if (req.user.role === 'resident') {
+      filter.residentId = req.user._id;
+    } else if (req.user.role === 'guard') {
+      filter.registeredByGuardId = req.user._id;
+    }
+
+    const rows = await Visit.aggregate([
+      { $match: filter },
+      { $group: { _id: '$status', count: { $sum: 1 } } },
+    ]);
+
+    const counts = { pending: 0, approved: 0, rejected: 0, entered: 0, exited: 0 };
+    rows.forEach(({ _id, count }) => {
+      const s = normalizeStatus(_id);
+      if (s in counts) counts[s] += count;
+    });
+
+    res.json({ counts });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   listVisits,
   getVisit,
@@ -338,4 +364,5 @@ module.exports = {
   markEntry,
   markExit,
   canAccessVisit,
+  getVisitCounts,
 };
