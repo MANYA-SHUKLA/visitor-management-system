@@ -58,7 +58,10 @@ export function AppShellFrame({
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View style={styles.titleBlock}>
-            <Text style={styles.subtitle}>Visitor Management</Text>
+            <View style={styles.brandRow}>
+              <LogoMark size={28} />
+              <Text style={styles.subtitle}>Visitor Management</Text>
+            </View>
             <Text style={styles.title} numberOfLines={1}>
               {title}
             </Text>
@@ -128,6 +131,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   titleBlock: { flex: 1, minWidth: 120 },
+  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   subtitle: {
     fontSize: 11,
     fontWeight: '600',
