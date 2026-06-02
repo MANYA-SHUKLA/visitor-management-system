@@ -7,6 +7,7 @@ Full-stack visitor management for residential societies — aligned with phased 
 | Layer | Technology |
 |-------|------------|
 | Frontend | Next.js, TypeScript, Tailwind, TanStack Query, Recharts, html5-qrcode |
+| Mobile | Expo, React Native, React Navigation, TanStack Query, expo-camera |
 | Backend | Node.js, Express, MongoDB, Mongoose, JWT, Nodemailer, qrcode |
 | Real-time | Polling every **10 seconds** (guard dashboard + notifications) |
 
@@ -16,6 +17,7 @@ Full-stack visitor management for residential societies — aligned with phased 
 visitor-management-system/
 ├── backend/          # Express API — port 5000
 ├── frontend/         # Next.js — port 3000
+├── app/              # React Native (Expo) — iOS & Android
 └── README.md
 ```
 
@@ -191,6 +193,17 @@ npm run dev
 Open **http://localhost:3000**. `npm run dev` uses **Turbopack** to hot-reload the UI when you edit `src/`.
 
 Run backend and frontend in **two terminals** for full-stack development.
+
+### Mobile app (iOS / Android)
+
+```bash
+cd app
+cp .env.example .env   # set EXPO_PUBLIC_API_URL to your backend /api URL
+npm install
+npm start
+```
+
+See `app/README.md` for emulator URLs and device setup.
 
 ### Demo accounts
 

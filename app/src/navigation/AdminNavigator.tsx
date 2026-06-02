@@ -27,8 +27,9 @@ function ScreenScroll({ children }: { children: React.ReactNode }) {
   );
 }
 
-function wrapScreen(Component: React.ComponentType<Record<string, unknown>>, scroll = true) {
-  return function Wrapped(props: Record<string, unknown>) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function wrapScreen(Component: React.ComponentType<any>, scroll = true) {
+  return function Wrapped(props: any) {
     if (!scroll) {
       return (
         <AppShellContent style={{ flex: 1 }}>
