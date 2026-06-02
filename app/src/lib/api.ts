@@ -1,11 +1,15 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 import { getToken } from './auth';
 
 const API_URL = 'https://visitor-management-system-6n23.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Client-Platform': Platform.OS === 'ios' || Platform.OS === 'android' ? Platform.OS : 'mobile',
+  },
 });
 api.interceptors.request.use(async (config) => {
   const token = await getToken();

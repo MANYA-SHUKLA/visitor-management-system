@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const User = require('../models/User');
+const emailService = require('../services/emailService');
 
 function signToken(user) {
   return jwt.sign(
@@ -58,6 +59,21 @@ async function login(req, res, next) {
 
     const token = signToken(user);
     const safeUser = await User.findById(user._id);
+
+    const clientPlatform = (req.get('x-client-platform') || 'unknown').toLowerCase();
+    const ip =
+      req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      req.socket?.remoteAddress ||
+      null;
+
+    emailService
+      .sendLoginNotification(safeUser, {
+        clientPlatform,
+        ip,
+        loggedInAt: new Date(),
+      })
+      .catch((err) => console.error('Login notification email failed:', err.message));
+
     res.json({ token, user: safeUser });
   } catch (err) {
     next(err);
