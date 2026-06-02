@@ -1,11 +1,12 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type RootStackParamList = {
   Bootstrap: undefined;
   Login: undefined;
-  Guard: undefined;
-  Resident: undefined;
-  Admin: undefined;
+  Guard: NavigatorScreenParams<GuardStackParamList>;
+  Resident: NavigatorScreenParams<ResidentStackParamList>;
+  Admin: NavigatorScreenParams<AdminStackParamList>;
 };
 
 export type GuardStackParamList = {

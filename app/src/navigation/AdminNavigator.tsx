@@ -6,7 +6,7 @@ import AppShellContent, { AppShellFrame } from '../components/AppShell';
 import { LoadingView } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { getActiveRouteName } from './getActiveRoute';
-import type { AdminStackParamList } from './types';
+import type { AdminStackParamList, RootStackParamList } from './types';
 import AdminAnalyticsScreen from '../screens/admin/AdminAnalyticsScreen';
 import AdminVisitsScreen from '../screens/admin/AdminVisitsScreen';
 import AdminVisitDetailScreen from '../screens/admin/AdminVisitDetailScreen';
@@ -27,11 +27,11 @@ function ScreenScroll({ children }: { children: React.ReactNode }) {
   );
 }
 
-function wrapScreen(Component: React.ComponentType<object>, scroll = true) {
-  return function Wrapped(props: object) {
+function wrapScreen(Component: React.ComponentType<Record<string, unknown>>, scroll = true) {
+  return function Wrapped(props: Record<string, unknown>) {
     if (!scroll) {
       return (
-        <AppShellContent>
+        <AppShellContent style={{ flex: 1 }}>
           <Component {...props} />
         </AppShellContent>
       );
@@ -46,9 +46,17 @@ function wrapScreen(Component: React.ComponentType<object>, scroll = true) {
 
 export default function AdminNavigator() {
   const { user, loading, logout } = useAuth('admin');
-  const navigation = useNavigation<NativeStackNavigationProp<AdminStackParamList>>();
-  const navState = useNavigationState((state) => state);
-  const currentRoute = getActiveRouteName(navState) || 'AdminAnalytics';
+  const rootNavigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const currentRoute =
+    useNavigationState((state) => {
+      const route = state.routes.find((r) => r.name === 'Admin');
+      if (route?.state) {
+        return getActiveRouteName(route.state) || 'AdminAnalytics';
+      }
+      return 'AdminAnalytics';
+    }) ?? 'AdminAnalytics';
 
   if (loading || !user) {
     return <LoadingView />;
@@ -65,7 +73,7 @@ export default function AdminNavigator() {
       currentRoute={activeTab}
       onNavigate={(route) => {
         if (TAB_ROUTES.has(route)) {
-          navigation.navigate(route as keyof AdminStackParamList);
+          rootNavigation.navigate('Admin', { screen: route } as never);
         }
       }}
     >

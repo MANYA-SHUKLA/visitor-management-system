@@ -1,12 +1,12 @@
 import { ScrollView } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation, useNavigationState } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AppShellContent, { AppShellFrame } from '../components/AppShell';
 import { LoadingView } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { getActiveRouteName } from './getActiveRoute';
-import type { ResidentStackParamList } from './types';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { ResidentStackParamList, RootStackParamList } from './types';
 import ResidentApprovalsScreen from '../screens/resident/ResidentApprovalsScreen';
 import ResidentHistoryScreen from '../screens/resident/ResidentHistoryScreen';
 import ResidentVisitDetailScreen from '../screens/resident/ResidentVisitDetailScreen';
@@ -27,8 +27,8 @@ function ScreenScroll({ children }: { children: React.ReactNode }) {
   );
 }
 
-function wrapScreen(Component: React.ComponentType<object>) {
-  return function Wrapped(props: object) {
+function wrapScreen(Component: React.ComponentType<Record<string, unknown>>) {
+  return function Wrapped(props: Record<string, unknown>) {
     return (
       <ScreenScroll>
         <Component {...props} />
@@ -39,10 +39,17 @@ function wrapScreen(Component: React.ComponentType<object>) {
 
 export default function ResidentNavigator() {
   const { user, loading, logout } = useAuth('resident');
-  const navigation =
-    useNavigation<NativeStackNavigationProp<ResidentStackParamList>>();
-  const navState = useNavigationState((state) => state);
-  const currentRoute = getActiveRouteName(navState) || 'ResidentApprovals';
+  const rootNavigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const currentRoute =
+    useNavigationState((state) => {
+      const route = state.routes.find((r) => r.name === 'Resident');
+      if (route?.state) {
+        return getActiveRouteName(route.state) || 'ResidentApprovals';
+      }
+      return 'ResidentApprovals';
+    }) ?? 'ResidentApprovals';
 
   if (loading || !user) {
     return <LoadingView />;
@@ -59,7 +66,7 @@ export default function ResidentNavigator() {
       currentRoute={activeTab}
       onNavigate={(route) => {
         if (TAB_ROUTES.has(route)) {
-          navigation.navigate(route as keyof ResidentStackParamList);
+          rootNavigation.navigate('Resident', { screen: route } as never);
         }
       }}
     >

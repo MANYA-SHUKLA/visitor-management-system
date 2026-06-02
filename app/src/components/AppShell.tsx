@@ -100,8 +100,14 @@ export function AppShellFrame({
 }
 
 /** Wrap screen content with padding (screens manage their own ScrollView). */
-export default function AppShellContent({ children }: { children: ReactNode }) {
-  return <View style={styles.screenPadding}>{children}</View>;
+export default function AppShellContent({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: object;
+}) {
+  return <View style={[styles.screenPadding, style]}>{children}</View>;
 }
 
 const styles = StyleSheet.create({

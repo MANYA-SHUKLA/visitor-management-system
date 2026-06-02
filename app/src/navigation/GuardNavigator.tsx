@@ -6,7 +6,7 @@ import AppShellContent, { AppShellFrame } from '../components/AppShell';
 import { LoadingView } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 import { getActiveRouteName } from './getActiveRoute';
-import type { GuardStackParamList } from './types';
+import type { GuardStackParamList, RootStackParamList } from './types';
 import GuardDashboardScreen from '../screens/guard/GuardDashboardScreen';
 import GuardRegisterScreen from '../screens/guard/GuardRegisterScreen';
 import GuardVisitsScreen from '../screens/guard/GuardVisitsScreen';
@@ -36,8 +36,8 @@ function ScreenScroll({ children }: { children: React.ReactNode }) {
   );
 }
 
-function wrapScreen(Component: React.ComponentType<object>) {
-  return function Wrapped(props: object) {
+function wrapScreen(Component: React.ComponentType<Record<string, unknown>>) {
+  return function Wrapped(props: Record<string, unknown>) {
     return (
       <ScreenScroll>
         <Component {...props} />
@@ -48,9 +48,17 @@ function wrapScreen(Component: React.ComponentType<object>) {
 
 export default function GuardNavigator() {
   const { user, loading, logout } = useAuth('guard');
-  const navigation = useNavigation<NativeStackNavigationProp<GuardStackParamList>>();
-  const navState = useNavigationState((state) => state);
-  const currentRoute = getActiveRouteName(navState) || 'GuardDashboard';
+  const rootNavigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const currentRoute =
+    useNavigationState((state) => {
+      const guardRoute = state.routes.find((r) => r.name === 'Guard');
+      if (guardRoute?.state) {
+        return getActiveRouteName(guardRoute.state) || 'GuardDashboard';
+      }
+      return 'GuardDashboard';
+    }) ?? 'GuardDashboard';
 
   if (loading || !user) {
     return <LoadingView />;
@@ -67,7 +75,9 @@ export default function GuardNavigator() {
       currentRoute={activeTab}
       onNavigate={(route) => {
         if (TAB_ROUTES.has(route)) {
-          navigation.navigate(route as keyof GuardStackParamList);
+          rootNavigation.navigate('Guard', {
+            screen: route,
+          } as never);
         }
       }}
     >

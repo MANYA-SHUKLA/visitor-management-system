@@ -19,14 +19,13 @@ export async function getStoredUser(): Promise<User | null> {
 }
 
 export async function setSession(token: string, user: User): Promise<void> {
-  await AsyncStorage.multiSet([
-    [TOKEN_KEY, token],
-    [USER_KEY, JSON.stringify(user)],
-  ]);
+  await AsyncStorage.setItem(TOKEN_KEY, token);
+  await AsyncStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
 export async function clearSession(): Promise<void> {
-  await AsyncStorage.multiRemove([TOKEN_KEY, USER_KEY]);
+  await AsyncStorage.removeItem(TOKEN_KEY);
+  await AsyncStorage.removeItem(USER_KEY);
 }
 
 export type RoleHomeScreen = 'Guard' | 'Resident' | 'Admin';
