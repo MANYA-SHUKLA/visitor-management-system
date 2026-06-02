@@ -129,6 +129,7 @@ app/android/**/*.iml
 
 # --- TypeScript ---
 *.tsbuildinfo
+next-env.d.ts
 
 # --- ESLint / Prettier / style ---
 .eslintcache
