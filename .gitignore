@@ -1,4 +1,9 @@
-# Dependencies
+# =============================================================================
+# Visitor Management System — root .gitignore
+# Covers: backend (Node/Express), frontend (Next.js), app (Expo/RN)
+# =============================================================================
+
+# --- Dependencies ---
 node_modules/
 jspm_packages/
 bower_components/
@@ -11,22 +16,32 @@ bower_components/
 !.yarn/versions
 .pnpm-store/
 .npm/
+package-lock.json.bak
 
-# Environment & secrets
+# --- Environment & secrets ---
 .env
 .env.*
 !.env.example
-!.env.local.example
+!.env.*.example
 .envrc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 *.pem
 *.key
 *.crt
 *.p12
+*.pfx
 secrets/
 credentials.json
 serviceAccount*.json
+**/google-services.json
+**/GoogleService-Info.plist
+*.keystore
+!debug.keystore
 
-# Logs
+# --- Logs ---
 logs/
 *.log
 npm-debug.log*
@@ -35,13 +50,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Runtime / process
+# --- Runtime / process ---
 pids/
 *.pid
 *.seed
 *.pid.lock
+.node_repl_history
 
-# Test & coverage
+# --- Test & coverage ---
 coverage/
 .nyc_output/
 *.lcov
@@ -49,39 +65,116 @@ coverage/
 test-results/
 playwright-report/
 playwright/.cache/
+.cypress/
+cypress/videos/
+cypress/screenshots/
+__snapshots__/__diff_output__/
 
-# Build outputs
+# --- Build & compile outputs ---
 dist/
 build/
 out/
-.next/
-.nuxt/
 .output/
 .cache/
 .parcel-cache/
-.turbo/
-.vercel/
-.netlify/
-serverless/
-
-# TypeScript
+.webpack/
 *.tsbuildinfo
-next-env.d.ts
 
-# Next.js
+# --- Next.js (frontend/) ---
 .next/
-out/
+next-env.d.ts
+.vercel/
+.swc/
 
-# ESLint / Prettier cache
+# --- Turbo / monorepo tooling ---
+.turbo/
+
+# --- Backend (Node/Express) ---
+uploads/
+public/uploads/
+tmp/uploads/
+
+# --- Expo / React Native (app/) ---
+.expo/
+.expo-shared/
+dist-expo/
+web-build/
+.metro-health-check*
+.metro-cache/
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+*.hprof
+
+# iOS (Expo prebuild / bare)
+app/ios/Pods/
+app/ios/build/
+app/ios/**/*.xcuserstate
+app/ios/**/*.xcworkspace/xcuserdata/
+app/ios/**/*.xcodeproj/xcuserdata/
+app/ios/**/*.xcodeproj/project.xcworkspace/xcuserdata/
+app/ios/DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Android (Expo prebuild / bare)
+app/android/.gradle/
+app/android/build/
+app/android/app/build/
+app/android/local.properties
+app/android/.cxx/
+app/android/captures/
+app/android/**/*.iml
+*.apk
+*.aab
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- ESLint / Prettier / style ---
 .eslintcache
 .prettiercache
+.stylelintcache
 
-# MongoDB / database dumps
+# --- MongoDB / database ---
 dump/
 *.dump
 data/db/
+*.sqlite
+*.sqlite3
 
-# OS files
+# --- Python (app/scripts, tooling) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.eggs/
+
+# --- Docker ---
+.docker/
+docker-compose.override.yml
+*.dockerignore.local
+
+# --- Hosting / deploy artifacts ---
+.netlify/
+.serverless/
+.firebase/
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# --- OS files ---
 .DS_Store
 .DS_Store?
 ._*
@@ -90,8 +183,9 @@ data/db/
 ehthumbs.db
 Thumbs.db
 Desktop.ini
+$RECYCLE.BIN/
 
-# Editors & IDEs
+# --- Editors & IDEs ---
 .idea/
 *.iml
 .vscode/*
@@ -99,38 +193,49 @@ Desktop.ini
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
-*.swp
-*.swo
-*~
+*.code-workspace
+*.sublime-workspace
+*.sublime-project
 .project
 .classpath
 .settings/
-*.sublime-workspace
-*.sublime-project
+*.swp
+*.swo
+*~
 
+# Cursor / AI local config (keep shared rules if you add them later)
+.cursor/*
+!.cursor/rules/
+!.cursor/skills/
+.claude/
+**/.claude/settings.local.json
 
-# Temporary files
+# --- Temporary & backup ---
 tmp/
 temp/
 *.tmp
 *.temp
 *.bak
 *.backup
+*.orig
 
-# Archives (optional local bundles)
+# --- Archives (local bundles; remove if you commit release zips) ---
 *.zip
 *.tar
 *.tar.gz
 *.tgz
 *.rar
+*.7z
 
-# Debug
+# --- Debug & profiling ---
 .npm/
-.node_repl_history
+*.cpuprofile
+*.heapprofile
+*.heapsnapshot
 
-# Misc
+# --- Misc local overrides ---
 *.local
 .turbo
-.swc/
-uploads/
-public/uploads/
+storybook-static/
+.sentryclirc
+.watchmanconfig.local
