@@ -1,17 +1,19 @@
-import axios from 'axios';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-  throw new Error('NEXT_PUBLIC_API_URL is not set.');
-}
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
-api.interceptors.request.use((config) => {
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    return Promise.reject(
+      new Error(
+        'NEXT_PUBLIC_API_URL is not set. Copy frontend/.env.example to frontend/.env.local'
+      )
+    );
+  }
+
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('vms_token');
     if (token) {
@@ -23,7 +25,7 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
+  (err: AxiosError<{ message?: string }>) => {
     const message =
       err.response?.data?.message || err.message || 'Request failed';
     return Promise.reject(new Error(message));

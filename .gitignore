@@ -18,6 +18,8 @@ package-lock.json.bak
 .env.*
 !.env.example
 !.env.*.example
+!frontend/.env.development
+!frontend/.env.production
 .envrc
 .env.local
 .env.development.local
@@ -77,7 +79,6 @@ out/
 
 # --- Next.js (frontend/) ---
 .next/
-next-env.d.ts
 .vercel/
 .swc/
 
