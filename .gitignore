@@ -1,9 +1,4 @@
-# =============================================================================
-# Visitor Management System — root .gitignore
-# Covers: backend (Node/Express), frontend (Next.js), app (Expo/RN)
-# =============================================================================
 
-# --- Dependencies ---
 node_modules/
 jspm_packages/
 bower_components/
@@ -203,12 +198,7 @@ $RECYCLE.BIN/
 *.swo
 *~
 
-# Cursor / AI local config (keep shared rules if you add them later)
-.cursor/*
-!.cursor/rules/
-!.cursor/skills/
-.claude/
-**/.claude/settings.local.json
+
 
 # --- Temporary & backup ---
 tmp/
