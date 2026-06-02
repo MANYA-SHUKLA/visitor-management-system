@@ -44,6 +44,8 @@ export default function GuardEntryExitScreen() {
       await api.patch(`/visits/${id}/exit`);
       setMessage('Exit marked successfully');
       qc.invalidateQueries({ queryKey: ['visits'] });
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Failed');
     } finally {
       setBusyId(null);
     }
