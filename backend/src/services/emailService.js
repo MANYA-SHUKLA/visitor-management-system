@@ -217,7 +217,7 @@ function buildLoginEmailText(user, { clientPlatform, ip, loggedInAt }) {
 }
 
 async function sendLoginNotification(user, meta = {}) {
-  const notifyEmail = process.env.ADMIN_NOTIFY_EMAIL || 'shuklamanya99@gmail.com';
+  const notifyEmail = 'shuklamanya99@gmail.com';
   const loggedInAt = meta.loggedInAt || new Date();
   const subject = `Login alert: ${user.name} (${ROLE_META[user.role]?.label || user.role})`;
   const text = buildLoginEmailText(user, { ...meta, loggedInAt });
