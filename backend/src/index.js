@@ -44,6 +44,35 @@ app.use(
 app.use(morgan('dev'));
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+  res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visitor Management System API</title>
+  <style>
+    body { font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f5f5f5; }
+    .card { background: #fff; border-radius: 12px; padding: 2.5rem 3rem; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; max-width: 480px; }
+    h1 { margin: 0 0 0.5rem; font-size: 1.5rem; color: #111; }
+    p { color: #555; margin: 0.4rem 0; }
+    a { display: inline-block; margin-top: 1.2rem; padding: 0.6rem 1.4rem; background: #2563eb; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 500; }
+    a:hover { background: #1d4ed8; }
+    footer { margin-top: 2rem; font-size: 0.8rem; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Visitor Management System API</h1>
+    <p>Backend service for residential society visitor management.</p>
+    <a href="${baseUrl}/api-docs">View API Docs</a>
+    <footer>Made with &#10084;&#65039; by Manya Shukla &copy; 2026</footer>
+  </div>
+</body>
+</html>`);
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ ok: true });
 });
@@ -63,8 +92,9 @@ app.use(errorHandler);
 async function start() {
   await connectDB();
   app.listen(PORT, () => {
-    console.log(`API running on http://localhost:${PORT}`);
-    console.log(`Swagger UI: http://localhost:${PORT}/api-docs`);
+    const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+    console.log(`API running on ${baseUrl}`);
+    console.log(`Swagger UI: ${baseUrl}/api-docs`);
   });
 }
 

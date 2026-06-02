@@ -13,6 +13,8 @@ info:
   version: 1.0.0
 
 servers:
+  - url: https://visitor-management-system-6n23.onrender.com
+    description: Production
   - url: http://localhost:5000
     description: Local development
 
