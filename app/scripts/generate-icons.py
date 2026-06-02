@@ -1,6 +1,4 @@
 
-"""Generate MS-branded Expo assets (matches frontend/src/app/icon.tsx)."""
-
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
