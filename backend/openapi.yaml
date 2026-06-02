@@ -1,0 +1,754 @@
+openapi: 3.0.3
+info:
+  title: Visitor Management System API
+  description: |
+    API for residential society visitor management — guards register visitors, residents approve or reject,
+    QR or manual entry/exit tracking, notifications, and admin analytics.
+
+    **Authentication:** Protected routes require `Authorization: Bearer <jwt>` from `POST /api/auth/login`.
+
+    **Roles:** `guard`, `resident`, `admin`
+
+    **Visit status flow:** `pending` → `approved` | `rejected` → `entered` → `exited`
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5000
+    description: Local development
+
+tags:
+  - name: Health
+  - name: Auth
+  - name: Visits
+  - name: Residents
+  - name: Notifications
+  - name: Analytics
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Health check
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register user (admin only)
+      operationId: authRegister
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageError'
+        '401':
+          description: Not authenticated
+        '403':
+          description: Forbidden
+        '409':
+          description: Email already registered
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Current user profile
+      operationId: authMe
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Not authenticated
+
+  /api/visits:
+    get:
+      tags: [Visits]
+      summary: List visits
+      description: Filtered by role — guard sees own registrations, resident sees own unit, admin sees all.
+      operationId: listVisits
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/VisitStatus'
+        - name: apartment
+          in: query
+          schema:
+            type: string
+        - name: period
+          in: query
+          description: Filter by created date
+          schema:
+            type: string
+            enum: [today, week, month]
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Visit list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  visits:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Visit'
+    post:
+      tags: [Visits]
+      summary: Register visitor (guard)
+      operationId: createVisit
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateVisitRequest'
+      responses:
+        '201':
+          description: Visit created (pending approval)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  visit:
+                    $ref: '#/components/schemas/Visit'
+        '400':
+          description: Validation error
+        '403':
+          description: Guard only
+        '404':
+          description: Resident not found for apartment
+
+  /api/visits/scan:
+    post:
+      tags: [Visits]
+      summary: Scan QR for entry or exit (guard)
+      operationId: scanVisit
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [qrToken]
+              properties:
+                qrToken:
+                  type: string
+      responses:
+        '200':
+          description: Entry or exit recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanResponse'
+        '400':
+          description: Invalid QR or wrong visit state
+        '403':
+          description: Guard only
+
+  /api/visits/{id}:
+    get:
+      tags: [Visits]
+      summary: Get visit by ID
+      operationId: getVisit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/VisitId'
+      responses:
+        '200':
+          description: Visit detail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  visit:
+                    $ref: '#/components/schemas/Visit'
+        '403':
+          description: Forbidden
+        '404':
+          description: Not found
+
+  /api/visits/{id}/approve:
+    patch:
+      tags: [Visits]
+      summary: Approve visit (resident)
+      operationId: approveVisit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/VisitId'
+      responses:
+        '200':
+          description: Approved — QR token generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  visit:
+                    $ref: '#/components/schemas/Visit'
+        '400':
+          description: Not pending
+        '403':
+          description: Resident only
+
+  /api/visits/{id}/reject:
+    patch:
+      tags: [Visits]
+      summary: Reject visit (resident)
+      operationId: rejectVisit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/VisitId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Rejected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  visit:
+                    $ref: '#/components/schemas/Visit'
+
+  /api/visits/{id}/entry:
+    patch:
+      tags: [Visits]
+      summary: Mark entry (guard)
+      operationId: markEntry
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/VisitId'
+      responses:
+        '200':
+          description: Entry marked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanResponse'
+
+  /api/visits/{id}/exit:
+    patch:
+      tags: [Visits]
+      summary: Mark exit (guard)
+      operationId: markExit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/VisitId'
+      responses:
+        '200':
+          description: Exit marked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanResponse'
+
+  /api/visits/{id}/qr:
+    get:
+      tags: [Visits]
+      summary: Get QR code image for visit
+      operationId: getVisitQr
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/VisitId'
+      responses:
+        '200':
+          description: QR data URL and token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  qrToken:
+                    type: string
+                  dataUrl:
+                    type: string
+                    description: Base64 PNG data URL
+        '400':
+          description: QR not available
+
+  /api/residents:
+    get:
+      tags: [Residents]
+      summary: List residents (guard, admin)
+      operationId: listResidents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: apartment
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Resident list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  residents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResidentSummary'
+
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: List notifications for current user
+      operationId: listNotifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListResponse'
+
+  /api/notifications/read-all:
+    patch:
+      tags: [Notifications]
+      summary: Mark all notifications as read
+      operationId: markAllNotificationsRead
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+
+  /api/notifications/{id}/read:
+    patch:
+      tags: [Notifications]
+      summary: Mark notification as read
+      operationId: markNotificationRead
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Updated notification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notification:
+                    $ref: '#/components/schemas/Notification'
+        '404':
+          description: Not found
+
+  /api/analytics/summary:
+    get:
+      tags: [Analytics]
+      summary: Analytics summary (admin)
+      operationId: getAnalyticsSummary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsSummary'
+        '403':
+          description: Admin only
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    VisitId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    MessageError:
+      type: object
+      properties:
+        message:
+          type: string
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: guard@shuklamanya99.com
+        password:
+          type: string
+          example: guard123
+
+    RegisterRequest:
+      type: object
+      required: [email, password, name, role]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        name:
+          type: string
+        role:
+          type: string
+          enum: [guard, resident, admin]
+        apartment:
+          type: string
+          description: Flat number (required for residents)
+        phone:
+          type: string
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [guard, resident, admin]
+        apartment:
+          type: string
+        flatNumber:
+          type: string
+        phone:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ResidentSummary:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        apartment:
+          type: string
+        phone:
+          type: string
+
+    VisitStatus:
+      type: string
+      enum: [pending, approved, rejected, entered, exited]
+
+    CreateVisitRequest:
+      type: object
+      required: [visitorName, visitorPhone, purpose, apartment]
+      properties:
+        visitorName:
+          type: string
+          example: Jane Doe
+        visitorPhone:
+          type: string
+          example: "9876543210"
+        purpose:
+          type: string
+          example: Family visit
+        apartment:
+          type: string
+          example: A-101
+        expectedAt:
+          type: string
+          format: date-time
+
+    Visit:
+      type: object
+      properties:
+        _id:
+          type: string
+        visitorName:
+          type: string
+        visitorPhone:
+          type: string
+        purpose:
+          type: string
+        status:
+          $ref: '#/components/schemas/VisitStatus'
+        apartment:
+          type: string
+        expectedAt:
+          type: string
+          format: date-time
+        approvedAt:
+          type: string
+          format: date-time
+        rejectedAt:
+          type: string
+          format: date-time
+        rejectReason:
+          type: string
+        entryAt:
+          type: string
+          format: date-time
+        exitAt:
+          type: string
+          format: date-time
+        qrToken:
+          type: string
+        residentId:
+          $ref: '#/components/schemas/ResidentSummary'
+        registeredByGuardId:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ScanResponse:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: [entry, exit]
+        visit:
+          $ref: '#/components/schemas/Visit'
+
+    Notification:
+      type: object
+      properties:
+        _id:
+          type: string
+        type:
+          type: string
+          enum:
+            - approval_request
+            - visit_approved
+            - visit_rejected
+            - visitor_entered
+            - visitor_exited
+        title:
+          type: string
+        body:
+          type: string
+        message:
+          type: string
+        read:
+          type: boolean
+        visitId:
+          type: string
+        visitorId:
+          type: string
+        residentId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    NotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        unreadCount:
+          type: integer
+
+    AnalyticsSummary:
+      type: object
+      properties:
+        totalVisitors:
+          type: integer
+        totalToday:
+          type: integer
+        totalWeek:
+          type: integer
+        totalMonth:
+          type: integer
+        visitorsToday:
+          type: integer
+        approvedVisitors:
+          type: integer
+        rejectedVisitors:
+          type: integer
+        pending:
+          type: integer
+        onPremise:
+          type: integer
+        approvalRate:
+          type: integer
+        rejectionRate:
+          type: integer
+        avgDurationMinutes:
+          type: integer
+        statusCounts:
+          type: object
+          additionalProperties:
+            type: integer
+        visitsByDay:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+              count:
+                type: integer
+        visitsByWeek:
+          type: array
+          items:
+            type: object
+            properties:
+              week:
+                type: string
+              count:
+                type: integer
+        frequentVisitors:
+          type: array
+          items:
+            type: object
+            properties:
+              visitorName:
+                type: string
+              visitorPhone:
+                type: string
+              visitCount:
+                type: integer
+        peakHours:
+          type: array
+          items:
+            type: object
+            properties:
+              hour:
+                type: integer
+              count:
+                type: integer
