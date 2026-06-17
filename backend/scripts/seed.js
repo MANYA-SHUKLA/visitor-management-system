@@ -2,7 +2,6 @@ require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const mongoose = require('mongoose');
 const User = require('../src/models/User');
 const Visit = require('../src/models/Visit');
-
 const LEGACY_EMAILS = {
   'admin@shuklamanya99': 'admin@shuklamanya99.com',
   'guard@shuklamanya99': 'guard@shuklamanya99.com',
