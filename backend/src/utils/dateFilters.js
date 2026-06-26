@@ -3,7 +3,6 @@ function startOfDay(d = new Date()) {
   x.setHours(0, 0, 0, 0);
   return x;
 }
-
 function daysAgo(n) {
   const d = startOfDay();
   d.setDate(d.getDate() - n);
